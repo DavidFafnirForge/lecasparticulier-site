@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion TikTok — Le Cas Particulier</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .carte { max-width: 640px; padding: 2rem; border: 1px solid #2a2f3a; border-radius: 10px; background: #12141a; }
+  h1 { font-size: 1.35rem; margin: 0 0 1rem; color: #f4efe6; }
+  p { color: #b9b3a8; line-height: 1.6; }
+  code { display: block; padding: 1rem; margin: 1rem 0; background: #0a0b0f; border: 1px dashed #3a4150;
+         border-radius: 6px; color: #e8c98a; font-size: .95rem; word-break: break-all; user-select: all; }
+  button { padding: .7rem 1.2rem; background: #c98a4b; color: #12141a; border: 0; border-radius: 6px;
+           font-weight: 700; cursor: pointer; }
+  .note { font-size: .85rem; color: #7d7669; margin-top: 1.2rem; }
+  .absent { color: #d98b8b; }
+</style>
+</head>
+<body>
+<div class="carte">
+  <h1 id="titre">Connexion TikTok</h1>
+  <p id="intro">TikTok vient de renvoyer l'autorisation. Copie la valeur ci-dessous et colle-la dans la conversation.</p>
+  <code id="code">—</code>
+  <button id="copier" type="button">Copier</button>
+  <p class="note" id="note">Cette page ne stocke rien et n'envoie rien : le code s'affiche uniquement pour être recopié. Il expire en une à deux minutes.</p>
+</div>
+<script>
+(function () {
+  var p = new URLSearchParams(window.location.search);
+  var code = p.get("code") || p.get("auth_code");
+  var err  = p.get("error") || p.get("error_description");
+  var elCode = document.getElementById("code");
+  var note = document.getElementById("note");
+  if (err) {
+    document.getElementById("titre").textContent = "Autorisation refusée";
+    document.getElementById("intro").textContent = "TikTok a renvoyé une erreur :";
+    elCode.textContent = decodeURIComponent(err);
+    elCode.className = "absent";
+    document.getElementById("copier").style.display = "none";
+    note.textContent = "Recopie cette erreur dans la conversation : elle indique la cause exacte.";
+    return;
+  }
+  if (!code) {
+    elCode.textContent = "(aucun code dans l'adresse)";
+    elCode.className = "absent";
+    document.getElementById("copier").style.display = "none";
+    note.textContent = "L'adresse ne contient pas de paramètre code. Recopie l'adresse complète de la barre du navigateur.";
+    return;
+  }
+  elCode.textContent = code;
+  document.getElementById("copier").addEventListener("click", function () {
+    navigator.clipboard.writeText(code).then(function () {
+      document.getElementById("copier").textContent = "Copié";
+    });
+  });
+})();
+</script>
+</body>
+</html>
